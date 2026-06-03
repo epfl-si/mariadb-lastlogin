@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	gopkg.in/ini.v1 v1.67.1
-	modernc.org/sqlite v1.50.0
+	modernc.org/sqlite v1.51.0
 )
 
 require (
@@ -16,7 +16,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/sys v0.42.0 // indirect
-	modernc.org/libc v1.72.0 // indirect
+	modernc.org/libc v1.72.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
