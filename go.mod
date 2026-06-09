@@ -3,7 +3,7 @@ module github.com/epfl-si/mariadb-conntracker
 go 1.25.0
 
 require (
-	gopkg.in/ini.v1 v1.67.1
+	gopkg.in/ini.v1 v1.67.3
 	modernc.org/sqlite v1.52.0
 )
 
