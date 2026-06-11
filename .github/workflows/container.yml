@@ -5,7 +5,7 @@ on:  # yamllint disable-line rule:truthy
     tags:
       - "v*.*.*"
 env:
-  PACKAGE_PATH: ./cmd/conntracker
+  PACKAGE_PATH: ./cmd/mariadb-lastlogin
   KO_CONFIG_PATH: build/package/ko.yaml
 
 jobs:

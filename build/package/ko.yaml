@@ -1,8 +1,8 @@
 # This file is used by .github/workflow/container.yml to configure
 # ko-build.
 builds:
-  - id: conntracker
-    main: ./cmd/conntracker
+  - id: lastlogin
+    main: ./cmd/mariadb-lastlogin
     env:
       - CGO_ENABLED=0
     ldflags:

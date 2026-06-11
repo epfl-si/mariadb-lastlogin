@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/epfl-si/mariadb-conntracker/internal/conntracker"
+	"github.com/epfl-si/mariadb-lastlogin/internal/lastlogin"
 )
 
 var version = "dev"
@@ -19,11 +19,11 @@ func main() {
 	flag.Parse()
 
 	if *versionFlag || (len(os.Args) > 1 && os.Args[1] == "version") {
-		fmt.Printf("conntracker version %s\n", version)
+		fmt.Printf("lastlogin version %s\n", version)
 		os.Exit(0)
 	}
 
-	cfg, err := conntracker.InitConfig()
+	cfg, err := lastlogin.InitConfig()
 	if err != nil {
 		log.Fatalf("Failed to initialize config: %v", err)
 	}
@@ -38,22 +38,22 @@ func main() {
 	}
 }
 
-func run(cfg conntracker.Config) error {
+func run(cfg lastlogin.Config) error {
 
-	db, err := conntracker.OpenOrCreateDB(cfg)
+	db, err := lastlogin.OpenOrCreateDB(cfg)
 	if err != nil {
 		slog.Error("failed to open or create database.", "error_msg", err)
 		return err
 	}
 	defer db.Close()
 
-	lastProcessedTime, err := conntracker.GetLastProcessedTime(cfg, db)
+	lastProcessedTime, err := lastlogin.GetLastProcessedTime(cfg, db)
 	if err != nil {
 		slog.Error("failed to get last processed time", "error_msg", err)
 		return err
 	}
 
-	filePaths, newLastProcessedTime, err := conntracker.FilterAndSortNewFiles(cfg, lastProcessedTime)
+	filePaths, newLastProcessedTime, err := lastlogin.FilterAndSortNewFiles(cfg, lastProcessedTime)
 	if err != nil {
 		slog.Error("error getting files to process", "error_msg", err)
 		return err
@@ -67,21 +67,21 @@ func run(cfg conntracker.Config) error {
 		return nil
 	}
 
-	accounts, err := conntracker.ProcessFilesParallel(cfg, filePaths)
+	accounts, err := lastlogin.ProcessFilesParallel(cfg, filePaths)
 	if err != nil {
 		slog.Error("error processing files", "error_msg", err)
 		return err
 	}
 	slog.Debug("debug accounts found accross all files", "accounts_parsed", len(accounts))
 
-	inserted, updated, err := conntracker.InsertOrUpdateAccounts(cfg, db, accounts)
+	inserted, updated, err := lastlogin.InsertOrUpdateAccounts(cfg, db, accounts)
 	if err != nil {
 		slog.Error("failed to insert or update accounts", "error_msg", err)
 		return err
 	}
 	slog.Debug("debug affected accounts count", "inserted", inserted, "updated", updated)
 
-	if err := conntracker.UpdateLastProcessedTime(cfg, db, newLastProcessedTime); err != nil {
+	if err := lastlogin.UpdateLastProcessedTime(cfg, db, newLastProcessedTime); err != nil {
 		slog.Error("error updating the date of the last parsing.", "error_msg", err)
 		return err
 	}

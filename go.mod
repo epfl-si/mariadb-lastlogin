@@ -1,4 +1,4 @@
-module github.com/epfl-si/mariadb-conntracker
+module github.com/epfl-si/mariadb-lastlogin
 
 go 1.25.0
 

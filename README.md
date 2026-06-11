@@ -1,10 +1,10 @@
-# MariaDB Connection Tracker
+# MariaDB Last Login
 
-MariaDB Connection Tracker (`conntracker`) is a Go program that monitors and logs database connections from MariaDB's audit log files to a SQLite database. It's designed to run frequently via a cron job, providing insights into the latest connections per account. This is useful for detecting unused accounts. Note that accounts that have never logged in will be absent from the SQLite database.
+MariaDB Last Login (`mariadb-lastlogin`) is a Go program that monitors and logs database connections from MariaDB's audit log files to a SQLite database. It's designed to run frequently via a cron job, providing insights into the latest connections per account. This is useful for detecting unused accounts. Note that accounts that have never logged in will be absent from the SQLite database.
 
-When multiple files are present (likely if you use logrotate on your audit files), conntracker compares the file modification date with the last processed date, ensuring already processed files aren't read every time.
+When multiple files are present (likely if you use logrotate on your audit files), mariadb-lastlogin compares the file modification date with the last processed date, ensuring already processed files aren't read every time.
 
-To store the last processed time, conntracker updates the last connection date for the `mysql@localhost` user. Keep in mind that this account's `last_seen` date is not related to the actual database access time.
+To store the last processed time, mariadb-lastlogin updates the last connection date for the `mysql@localhost` user. Keep in mind that this account's `last_seen` date is not related to the actual database access time.
 
 ## Features
 
@@ -26,37 +26,37 @@ MariaDB doesn't natively store the last connection date of an account. Creating 
 ## Installation
 
 1. Clone the repository:
-git clone https://github.com/yourusername/mariadb-conntracker.git
+git clone https://github.com/yourusername/mariadb-lastlogin.git
 
 2. Navigate to the project directory:
-cd mariadb-conntracker
+cd mariadb-lastlogin
 
 3. Build the project:
 go build
 
 4. Copy the binary and make it executable:
-sudo cp conntracker /usr/bin
-sudo chmod +x /usr/bin/conntracker
+sudo cp mariadb-lastlogin /usr/bin
+sudo chmod +x /usr/bin/mariadb-lastlogin
 
 ## Configuration
 
 1. Ensure the MariaDB [Audit Plugin](https://mariadb.com/kb/en/mariadb-audit-plugin/) is enabled on your database server.
-2. Copy the `conntracker.ini-dist` to `/etc/conntracker/conntracker.ini`
-3. Edit `/etc/conntracker/conntracker.ini` with your specific configuration details.
+2. Copy the `config.ini-dist` to `/etc/mariadb-lastlogin/config.ini`
+3. Edit `/etc/mariadb-lastlogin/config.ini` with your specific configuration details.
 
 ## Usage
 
 Run the program manually:
 
 ```go
-./conntracker
+./mariadb-lastlogin
 ```
 
 No output means the script worked. Head to [Read the SQLite database] bellow to retrieve the data.
 
 You can also check the version installed using:
 ```go
-./conntracker version
+./mariadb-lastlogin version
 ```
 
 ## Cron Job Setup
@@ -68,7 +68,7 @@ crontab -e
 
 2. Add a line like this (adjust the timing and path as needed). Here we start with a run every 15 minutes:
 ```
-*/15 * * * * /path/to/conntracker
+*/15 * * * * /path/to/mariadb-lastlogin
 ```
 
 3. Save and exit the editor.

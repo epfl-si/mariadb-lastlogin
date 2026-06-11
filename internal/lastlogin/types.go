@@ -1,4 +1,4 @@
-package conntracker
+package lastlogin
 
 import (
 	"log/slog"

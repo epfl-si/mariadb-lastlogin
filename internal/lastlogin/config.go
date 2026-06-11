@@ -1,4 +1,4 @@
-package conntracker
+package lastlogin
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 func InitConfig() (Config, error) {
 
-	cfg, err := ini.Load("/etc/conntracker/conntracker.ini")
+	cfg, err := ini.Load("/etc/mariadb-lastlogin/config.ini")
 	if err != nil {
 		return Config{}, fmt.Errorf("failed to load ini file: %w", err)
 	}

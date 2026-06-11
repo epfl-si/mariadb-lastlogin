@@ -1,4 +1,4 @@
-package conntracker
+package lastlogin
 
 import (
 	"database/sql"
@@ -69,7 +69,7 @@ func UpdateLastProcessedTime(cfg Config, db *sql.DB, lastProcessedTime time.Time
 	formattedTime := lastProcessedTime.Format(cfg.TimeFormatDB)
 
 	updateStmt, err := db.Prepare(`
-		UPDATE Accounts 
+		UPDATE Accounts
 		SET last_seen = MAX(last_seen, ?)
 		WHERE name = 'mysql' AND host = 'localhost'
 	`)
@@ -114,7 +114,7 @@ func InsertOrUpdateAccounts(cfg Config, db *sql.DB, accounts map[string]AccountI
 
 	// Prepare the update statement
 	updateStmt, err := db.Prepare(`
-		UPDATE Accounts 
+		UPDATE Accounts
 		SET last_seen = MAX(last_seen, ?)
 		WHERE name = ? AND host = ?
 	`)

@@ -36,12 +36,12 @@ jobs:
           go build
           -v
           -ldflags "-X main.version={{.Env.GITHUB_REF_NAME}}"
-          -o conntracker
-          ./cmd/conntracker
+          -o mariadb-lastlogin
+          ./cmd/mariadb-lastlogin
 
       - name: Release
         uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body: ${{ steps.changelog.outputs.content }}
-          files: conntracker
+          files: mariadb-lastlogin
