@@ -1,4 +1,5 @@
 [default]
+AuditLogFile = server_audit.log
 AuditLogPath = /var/lib/mysql
 SqlitePath = /var/lib/mysql/audit.sqlite
 TimeFormatAudit = "20060102 15:04:05"

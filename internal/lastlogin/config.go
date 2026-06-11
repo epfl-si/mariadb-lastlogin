@@ -35,6 +35,7 @@ func InitConfig() (Config, error) {
 	maxWorkers := defaultSection.Key("MaxWorkers").MustInt(4)
 
 	return Config{
+		AuditLogFile:    defaultSection.Key("AuditLogFile").MustString("server_audit.log"),
 		AuditLogPath:    defaultSection.Key("AuditLogPath").String(),
 		SqlitePath:      defaultSection.Key("SqlitePath").String(),
 		TimeFormatAudit: defaultSection.Key("TimeFormatAudit").String(),

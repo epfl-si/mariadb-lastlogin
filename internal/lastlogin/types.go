@@ -6,6 +6,7 @@ import (
 )
 
 type Config struct {
+	AuditLogFile    string
 	AuditLogPath    string
 	SqlitePath      string
 	TimeFormatAudit string

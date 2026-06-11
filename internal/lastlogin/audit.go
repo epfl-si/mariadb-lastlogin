@@ -12,31 +12,56 @@ import (
 	"time"
 )
 
+
+func isAuditLogName(name, base string) bool {
+	if name == base {
+		return true
+	}
+	suffix := strings.TrimPrefix(name, base+".")
+	if suffix == name || suffix == "" {
+		return false
+	}
+	for _, r := range suffix {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
+}
+
 func FilterAndSortNewFiles(cfg Config, lastProcessedTime time.Time) ([]string, time.Time, error) {
 	var fileInfos []FileInfo
 	totalFiles := 0
 	slog.Debug("debug", "lastProcessedTime", lastProcessedTime)
 
-	err := filepath.Walk(cfg.AuditLogPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return fmt.Errorf("error accessing path %s: %w", path, err)
-		}
-
-		if !info.IsDir() {
-			totalFiles++
-			if info.ModTime().After(lastProcessedTime) {
-				fileInfos = append(fileInfos, FileInfo{
-					Path:    path,
-					ModTime: info.ModTime(),
-				})
-			}
-		}
-
-		return nil
-	})
-
+	entries, err := os.ReadDir(cfg.AuditLogPath)
 	if err != nil {
-		return nil, lastProcessedTime, fmt.Errorf("error walking through directory: %w", err)
+		return nil, lastProcessedTime, fmt.Errorf("error reading directory %s: %w", cfg.AuditLogPath, err)
+	}
+
+	for _, entry := range entries {
+		// Skip subdirectories: the audit log dir is the MariaDB data directory by
+		// default (/var/lib/mysql), which contains files we must not touch.
+		if entry.IsDir() {
+			continue
+		}
+
+		if !isAuditLogName(entry.Name(), cfg.AuditLogFile) {
+			continue
+		}
+
+		info, err := entry.Info()
+		if err != nil {
+			return nil, lastProcessedTime, fmt.Errorf("error stating %s: %w", entry.Name(), err)
+		}
+
+		totalFiles++
+		if info.ModTime().After(lastProcessedTime) {
+			fileInfos = append(fileInfos, FileInfo{
+				Path:    filepath.Join(cfg.AuditLogPath, entry.Name()),
+				ModTime: info.ModTime(),
+			})
+		}
 	}
 
 	if totalFiles == 0 {
