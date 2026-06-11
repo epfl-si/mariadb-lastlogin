@@ -1,6 +1,6 @@
 module github.com/epfl-si/mariadb-lastlogin
 
-go 1.25.0
+go 1.26
 
 require (
 	gopkg.in/ini.v1 v1.67.3
