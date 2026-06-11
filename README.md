@@ -79,14 +79,8 @@ Requirements:
 - Access to the audit log files
 - A storage for the Sqlite database
 
-Create the configuration file `config.ini`:
-```ini
-[default]
-AuditLogFile = server_audit.log
-AuditLogPath = /var/lib/mysql
-SqlitePath = /var/lib/mysql/audit.sqlite
-```
-Then start the container. It will exit when finished
+Copy the `config.ini-dist` and name it `config.ini`.
+Then start the container. It will exit when finished, that's intended:
 ```sh
 podman/docker run --detach --interactive --tty \
 --name mariadb-lastlogin \
