@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Extract changelog for this version
         id: changelog
@@ -25,23 +25,22 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version-file: go.mod
 
       - name: Build
         run: >-
           CGO_ENABLED=0
           go build
           -v
-          -ldflags "-X main.version=$(git describe --tags --always --dirty)"
+          -ldflags "-X main.version={{.Env.GITHUB_REF_NAME}}"
           -o conntracker
           ./cmd/conntracker
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body: ${{ steps.changelog.outputs.content }}

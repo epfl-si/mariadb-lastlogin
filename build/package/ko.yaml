@@ -1,0 +1,10 @@
+# This file is used by .github/workflow/container.yml to configure
+# ko-build.
+builds:
+  - id: conntracker
+    main: ./cmd/conntracker
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w  # strip symbol table (-s) and DWARF debug info (-w): smaller binary, no Delve
+      - -X main.version={{.Env.GITHUB_REF_NAME}}

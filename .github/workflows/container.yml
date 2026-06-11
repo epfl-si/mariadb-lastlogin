@@ -1,0 +1,41 @@
+name: Build container images
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    tags:
+      - "v*.*.*"
+env:
+  PACKAGE_PATH: ./cmd/conntracker
+  KO_CONFIG_PATH: build/package/ko.yaml
+
+jobs:
+  ko-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # required to push to ghcr.io
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - uses: ko-build/setup-ko@v0.9
+
+      - name: Build static image
+        run: |
+          ko build "${PACKAGE_PATH}" \
+            --bare \
+            --platform=linux/amd64 \
+            --tags "${GITHUB_REF_NAME},latest"
+
+      - name: Build debug image
+        env:
+          KO_DEFAULTBASEIMAGE: gcr.io/distroless/static-debian12:debug-nonroot
+        run: |
+          ko build "${PACKAGE_PATH}" \
+            --bare \
+            --platform=linux/amd64 \
+            --tags "${GITHUB_REF_NAME}-debug,latest-debug"
