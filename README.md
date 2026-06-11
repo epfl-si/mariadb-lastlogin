@@ -73,6 +73,33 @@ crontab -e
 
 3. Save and exit the editor.
 
+## Use the container
+Requirements:
+- Configuration file at /etc/mariadb-lastlogin/config.ini
+- Access to the audit log files
+- A storage for the Sqlite database
+
+Create the configuration file `config.ini`:
+```ini
+[default]
+AuditLogFile = server_audit.log
+AuditLogPath = /var/lib/mysql
+SqlitePath = /var/lib/mysql/audit.sqlite
+```
+Then start the container. It will exit when finished
+```sh
+podman/docker run --detach --interactive --tty \
+--name mariadb-lastlogin \
+--volume ./config.ini:/etc/mariadb-lastlogin/config.ini \
+--volume /var/lib/mysql:/var/lib/mysql \
+ghcr.io/epfl-si/mariadb-lastlogin:latest
+```
+
+Display the logs:
+```sh
+podman/docker logs mariadb-lastlogin
+```
+
 ## Performance Considerations
 
 On busy servers, audit log files are rotated frequently. To ensure no data is missed, calculate the minimum interval between script executions based on your server's log rotation frequency.
