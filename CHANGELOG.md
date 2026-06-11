@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v1.2.1 (2026-06-11)
+- Add option to specify the audit log filename to prevent parsing unrelated files
+
 ## v1.2.0 (2026-06-11)
 - Renamed project from mariadb-conntracker to mariadb-lastlogin and binary from conntracker to mariadb-lastlogin
 - Breaking change: The configuration file change path from /etc/conntracker/conntracker.ini to /etc/mariadb-lastlogin/config.ini
