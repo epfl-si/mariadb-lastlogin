@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.2.0 (2026-06-11)
+- Renamed project from mariadb-conntracker to mariadb-lastlogin and binary from conntracker to mariadb-lastlogin
+- Breaking change: The configuration file change path from /etc/conntracker/conntracker.ini to /etc/mariadb-lastlogin/config.ini
+- Add container images published in ghcr.io
+
 ## v1.1.15 (2026-06-09)
 - Bumps modernc.org/sqlite from 1.50.0 to 1.52.0.
 - Bumps gopkg.in/ini.v1 from 1.67.1 to 1.67.3.
