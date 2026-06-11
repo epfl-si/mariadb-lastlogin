@@ -35,7 +35,7 @@ jobs:
           CGO_ENABLED=0
           go build
           -v
-          -ldflags "-X main.version={{.Env.GITHUB_REF_NAME}}"
+          -ldflags "-X main.version=${GITHUB_REF_NAME}"
           -o mariadb-lastlogin
           ./cmd/mariadb-lastlogin
 

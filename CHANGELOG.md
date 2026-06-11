@@ -1,7 +1,8 @@
 # CHANGELOG
 
 ## v1.?.? (????-??-??)
-- Bump Go from 1.25.0 to 1.26. Release number is omited so the build use the latest version.
+- Bump Go from 1.25.0 to 1.26. Release number is omited so the build use the latest version
+- Fix version displaying the name of the variable instead of the value
 
 ## v1.2.1 (2026-06-11)
 - Add option to specify the audit log filename to prevent parsing unrelated files
