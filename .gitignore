@@ -7,7 +7,7 @@
 *.dll
 *.so
 *.dylib
-/lastlogin
+/mariadb-lastlogin
 
 # Test binary, built with `go test -c`
 *.test
