@@ -33,6 +33,15 @@ func main() {
 	slog.SetDefault(slog.New(h))
 	programLevel.Set(cfg.LogLevel)
 
+	if cfg.LoopEnabled {
+		for {
+			if err := run(cfg); err != nil {
+				slog.Error("run failed, will retry", "error_msg", err)
+			}
+			time.Sleep(time.Duration(cfg.IntervalMinutes) * time.Minute)
+		}
+	}
+
 	if err := run(cfg); err != nil {
 		log.Fatal(err)
 	}

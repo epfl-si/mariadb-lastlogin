@@ -42,6 +42,8 @@ func InitConfig() (Config, error) {
 		TimeFormatDB:    defaultSection.Key("TimeFormatDB").MustString("2006-01-02 15:04:05-07:00"),
 		TimeLocation:    loc,
 		MaxWorkers:      maxWorkers,
+		LoopEnabled:     defaultSection.Key("LoopEnabled").MustBool(false),
+		IntervalMinutes: defaultSection.Key("IntervalMinutes").MustInt(15),
 		LogLevel:        logLevel,
 	}, nil
 }

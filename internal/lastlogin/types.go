@@ -13,6 +13,8 @@ type Config struct {
 	TimeFormatDB    string
 	TimeLocation    *time.Location
 	MaxWorkers      int
+	LoopEnabled     bool
+	IntervalMinutes int
 	LogLevel        slog.Level
 }
 
