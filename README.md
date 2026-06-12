@@ -82,7 +82,7 @@ Requirements:
 Copy the `config.ini-dist` and name it `config.ini`.
 Then start the container. It will exit when finished, that's intended:
 ```sh
-podman/docker run --interactive --tty \
+podman/docker run --rm \
 --name mariadb-lastlogin \
 --volume ./config.ini:/etc/mariadb-lastlogin/config.ini \
 --volume /var/lib/mysql:/var/lib/mysql \
