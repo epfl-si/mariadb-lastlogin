@@ -8,4 +8,4 @@ TimeLocation = Europe/Zurich
 MaxWorkers = 4
 LoopEnabled = false
 IntervalMinutes = 15
-LogLevel = ERROR  # DEBUG, INFO, WARN, ERROR
+LogLevel = INFO  # DEBUG, INFO, WARN, ERROR

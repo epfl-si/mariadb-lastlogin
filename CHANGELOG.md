@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Make loop and oneshot modes mutually exclusive in `main` to avoid a latent
   fall-through that could trigger an unintended extra run.
+- Default log level is now INFO instead of ERROR, so the per-run log lines are
+  visible without extra configuration.
 
 ### Fixed
 

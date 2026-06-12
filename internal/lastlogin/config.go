@@ -25,7 +25,7 @@ func InitConfig() (Config, error) {
 	}
 
 	// Parse LogLevel
-	logLevelStr := defaultSection.Key("LogLevel").MustString("ERROR")
+	logLevelStr := defaultSection.Key("LogLevel").MustString("INFO")
 	logLevel, err := parseLogLevel(logLevelStr)
 	if err != nil {
 		return Config{}, fmt.Errorf("failed to parse log level: %w", err)
