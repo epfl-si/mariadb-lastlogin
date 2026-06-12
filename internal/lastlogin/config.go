@@ -45,6 +45,7 @@ func InitConfig() (Config, error) {
 		LoopEnabled:     defaultSection.Key("LoopEnabled").MustBool(false),
 		IntervalMinutes: defaultSection.Key("IntervalMinutes").MustInt(15),
 		LogLevel:        logLevel,
+		LogFormat:       defaultSection.Key("LogFormat").MustString("json"),
 	}, nil
 }
 

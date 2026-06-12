@@ -9,3 +9,4 @@ MaxWorkers = 4
 LoopEnabled = false
 IntervalMinutes = 15
 LogLevel = INFO  # DEBUG, INFO, WARN, ERROR
+LogFormat = json  # json or text

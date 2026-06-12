@@ -16,6 +16,7 @@ type Config struct {
 	LoopEnabled     bool
 	IntervalMinutes int
 	LogLevel        slog.Level
+	LogFormat       string
 }
 
 type FileInfo struct {

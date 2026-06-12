@@ -29,7 +29,14 @@ func main() {
 	}
 
 	var programLevel = new(slog.LevelVar)
-	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel})
+	opts := &slog.HandlerOptions{Level: programLevel}
+
+	var h slog.Handler
+	if cfg.LogFormat == "text" {
+			h = slog.NewTextHandler(os.Stderr, opts)
+	} else {
+			h = slog.NewJSONHandler(os.Stderr, opts)
+	}
 	slog.SetDefault(slog.New(h))
 	programLevel.Set(cfg.LogLevel)
 

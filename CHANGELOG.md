@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Log an INFO line at the start and completion of each processing run, so loop
   mode shows it is alive (requires `LogLevel = INFO`).
+- `LogFormat` option (`json` or `text`). Defaults to `json` for structured log
+  ingestion (e.g. Loki/Grafana in Kubernetes); set `text` for readable local
+  output.
 
 ### Changed
 
