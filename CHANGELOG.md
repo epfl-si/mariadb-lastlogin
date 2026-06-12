@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [unreleased] - 0000-00-00
+
+### Fixed
+
+- Fix the inserted/updated account counts shown at the end of each run, which
+  previously counted no-op updates and miscounted already-current accounts.
 ## [v1.4.0] - 2026-06-12
 
 ### Added

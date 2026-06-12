@@ -2,6 +2,7 @@ package lastlogin
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	_ "modernc.org/sqlite"
 	"log/slog"
@@ -113,10 +114,20 @@ func InsertOrUpdateAccounts(cfg Config, db *sql.DB, accounts map[string]AccountI
 	var insertedAccounts uint64 = 0
 	var updatedAccounts uint64 = 0
 
+	selectStmt, err := db.Prepare(`
+		SELECT last_seen
+		FROM Accounts
+		WHERE name = ?
+		AND host = ?
+	`)
+	if err != nil {
+		return 0, 0, fmt.Errorf("error preparing select statement: %w", err)
+	}
+
 	// Prepare the update statement
 	updateStmt, err := db.Prepare(`
 		UPDATE Accounts
-		SET last_seen = MAX(last_seen, ?)
+		SET last_seen = ?
 		WHERE name = ? AND host = ?
 	`)
 	if err != nil {
@@ -135,34 +146,34 @@ func InsertOrUpdateAccounts(cfg Config, db *sql.DB, accounts map[string]AccountI
 	defer insertStmt.Close()
 
 	for _, a := range accounts {
-
-		// Append location to date string (+02:00 CEST for Europe/Zurich)
-		timeWithLocation := time.Date(
+		newTime := time.Date(
 			a.LastSeen.Year(), a.LastSeen.Month(), a.LastSeen.Day(),
 			a.LastSeen.Hour(), a.LastSeen.Minute(), a.LastSeen.Second(),
 			a.LastSeen.Nanosecond(), cfg.TimeLocation)
-		formatedTime := timeWithLocation.Format(cfg.TimeFormatDB)
+		formatted := newTime.Format(cfg.TimeFormatDB)
 
-		// Try to update first
-		result, err := updateStmt.Exec(formatedTime, a.Name, a.Host)
-		if err != nil {
-			return 0, 0, fmt.Errorf("error updating account: %w", err)
-		}
-
-		rowsAffected, err := result.RowsAffected()
-		if err != nil {
-			return 0, 0, fmt.Errorf("error getting rows affected: %w", err)
-		}
-
-		// If no rows were affected, insert a new record
-		if rowsAffected == 0 {
-			_, err = insertStmt.Exec(a.Name, a.Host, formatedTime)
-			if err != nil {
+		var existing sql.NullString
+		err := selectStmt.QueryRow(a.Name, a.Host).Scan(&existing)
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			// brand-new account -> must insert
+			if _, err := insertStmt.Exec(a.Name, a.Host, formatted); err != nil {
 				return 0, 0, fmt.Errorf("error inserting account: %w", err)
 			}
 			insertedAccounts++
-		} else {
-			updatedAccounts++
+		case err != nil:
+			return 0, 0, fmt.Errorf("error selecting account: %w", err)
+		default:
+			stored, err := time.Parse(time.RFC3339, existing.String)
+			if err != nil {
+				return 0, 0, fmt.Errorf("error parsing stored time %q: %w", existing.String, err)
+			}
+			if newTime.After(stored) { // true instant comparison, DST-safe
+				if _, err := updateStmt.Exec(formatted, a.Name, a.Host); err != nil {
+					return 0, 0, fmt.Errorf("error updating account: %w", err)
+				}
+				updatedAccounts++
+			}
 		}
 	}
 

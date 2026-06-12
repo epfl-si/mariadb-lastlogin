@@ -78,10 +78,7 @@ func run(cfg lastlogin.Config) error {
 		return err
 	}
 
-	// Round to the nearest second (filesystem returns 2024-10-15 13:43:57.109984656 +0200 CEST)
-	roundedNewLastProcessedTime := newLastProcessedTime.Round(time.Second)
-
-	if lastProcessedTime.Compare(roundedNewLastProcessedTime) >= 0 {
+	if lastProcessedTime.Compare(newLastProcessedTime) >= 0 {
 		slog.Info("no connections found since last processed time", "lastProcessedTime", lastProcessedTime)
 		return nil
 	}
