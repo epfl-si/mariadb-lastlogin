@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	_ "modernc.org/sqlite"
 	"log/slog"
+	_ "modernc.org/sqlite"
 	"os"
 	"time"
 )

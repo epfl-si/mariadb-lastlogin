@@ -33,9 +33,9 @@ func main() {
 
 	var h slog.Handler
 	if cfg.LogFormat == "text" {
-			h = slog.NewTextHandler(os.Stderr, opts)
+		h = slog.NewTextHandler(os.Stderr, opts)
 	} else {
-			h = slog.NewJSONHandler(os.Stderr, opts)
+		h = slog.NewJSONHandler(os.Stderr, opts)
 	}
 	slog.SetDefault(slog.New(h))
 	programLevel.Set(cfg.LogLevel)
