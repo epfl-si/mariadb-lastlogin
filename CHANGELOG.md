@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [unreleased] - 0000-00-00
 
+### Changed
+
+- Make loop and oneshot modes mutually exclusive in `main` to avoid a latent
+  fall-through that could trigger an unintended extra run.
+
 ### Fixed
 
-- Fix misleading "No valid dates found in the Accounts table" error message that appeared on first startup.
-
+- Fix misleading "No valid dates found in the Accounts table" error message
+  that appeared on first startup.
 
 ## [v1.3.0] - 2026-06-12
 
