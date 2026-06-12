@@ -15,7 +15,7 @@ To store the last processed time, mariadb-lastlogin updates the last connection 
 
 ## Rationale
 
-MariaDB doesn't natively store the last connection date of an account. Creating a stored procedure to do this on every connection could potentially slow down operations. Since we're already using the audit module for various reasons, parsing these logs is the most efficient option.
+MariaDB doesn't natively store the last connection date of an account (https://jira.mariadb.org/browse/MDEV-27205 request this but is stalled). Creating a stored procedure to do this on every connection could potentially slow down operations. Since we're already using the audit module for various reasons, parsing these logs is the most efficient option.
 
 ## Prerequisites
 
@@ -82,16 +82,11 @@ Requirements:
 Copy the `config.ini-dist` and name it `config.ini`.
 Then start the container. It will exit when finished, that's intended:
 ```sh
-podman/docker run --detach --interactive --tty \
+podman/docker run --interactive --tty \
 --name mariadb-lastlogin \
 --volume ./config.ini:/etc/mariadb-lastlogin/config.ini \
 --volume /var/lib/mysql:/var/lib/mysql \
 ghcr.io/epfl-si/mariadb-lastlogin:latest
-```
-
-Display the logs:
-```sh
-podman/docker logs mariadb-lastlogin
 ```
 
 ## Performance Considerations
