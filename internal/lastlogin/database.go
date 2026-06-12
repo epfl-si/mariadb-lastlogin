@@ -123,6 +123,7 @@ func InsertOrUpdateAccounts(cfg Config, db *sql.DB, accounts map[string]AccountI
 	if err != nil {
 		return 0, 0, fmt.Errorf("error preparing select statement: %w", err)
 	}
+	defer selectStmt.Close()
 
 	// Prepare the update statement
 	updateStmt, err := db.Prepare(`
