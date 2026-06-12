@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [unreleased] - 0000-00-00
+
+### Fixed
+
+- Fix misleading "No valid dates found in the Accounts table" error message that appeared on first startup.
+
+
 ## [v1.3.0] - 2026-06-12
 
 ### Added

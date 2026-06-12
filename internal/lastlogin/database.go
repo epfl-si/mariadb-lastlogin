@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "modernc.org/sqlite"
+	"log/slog"
 	"os"
 	"time"
 )
@@ -49,7 +50,7 @@ func GetLastProcessedTime(cfg Config, db *sql.DB) (time.Time, error) {
 
 	// Check if lastRunDate is NULL (which will be the case for an empty table)
 	if !lastRunDate.Valid || lastRunDate.String == "" {
-		fmt.Println("No valid dates found in the Accounts table")
+		slog.Debug("No valid dates found in the Accounts table")
 		return time.Date(1, 1, 1, 0, 0, 1, 0, cfg.TimeLocation), nil
 	}
 
