@@ -54,8 +54,13 @@ func FilterAndSortNewFiles(cfg Config, lastProcessedTime time.Time) ([]string, t
 			return nil, lastProcessedTime, fmt.Errorf("error stating %s: %w", entry.Name(), err)
 		}
 
+		// The Sqlite DB only persists whole seconds (TimeFormatDB has no fractional part),
+		// so compare at the same precision to avoid reprocessing the newest file
+		// on every run.
+		modTime := info.ModTime().Truncate(time.Second)
+
 		totalFiles++
-		if info.ModTime().After(lastProcessedTime) {
+		if modTime.After(lastProcessedTime) {
 			fileInfos = append(fileInfos, FileInfo{
 				Path:    filepath.Join(cfg.AuditLogPath, entry.Name()),
 				ModTime: info.ModTime(),

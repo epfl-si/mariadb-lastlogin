@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Fix the inserted/updated account counts shown at the end of each run, which
   previously counted no-op updates and miscounted already-current accounts.
+- Compare last-seen timestamps as instants rather than as text, fixing
+  incorrect update decisions around daylight-saving offset changes.
+
 ## [v1.4.0] - 2026-06-12
 
 ### Added
