@@ -18,14 +18,14 @@ func InitConfig() (Config, error) {
 	defaultSection := cfg.Section("default")
 
 	// Load TimeLocation
-	timeLocationStr := defaultSection.Key("TimeLocation").String()
+	timeLocationStr := defaultSection.Key("TimeLocation").MustString("Europe/Zurich")
 	loc, err := time.LoadLocation(timeLocationStr)
 	if err != nil {
 		return Config{}, fmt.Errorf("failed to load location: %w", err)
 	}
 
 	// Parse LogLevel
-	logLevelStr := defaultSection.Key("LogLevel").String()
+	logLevelStr := defaultSection.Key("LogLevel").MustString("ERROR")
 	logLevel, err := parseLogLevel(logLevelStr)
 	if err != nil {
 		return Config{}, fmt.Errorf("failed to parse log level: %w", err)
@@ -36,10 +36,10 @@ func InitConfig() (Config, error) {
 
 	return Config{
 		AuditLogFile:    defaultSection.Key("AuditLogFile").MustString("server_audit.log"),
-		AuditLogPath:    defaultSection.Key("AuditLogPath").String(),
-		SqlitePath:      defaultSection.Key("SqlitePath").String(),
-		TimeFormatAudit: defaultSection.Key("TimeFormatAudit").String(),
-		TimeFormatDB:    defaultSection.Key("TimeFormatDB").String(),
+		AuditLogPath:    defaultSection.Key("AuditLogPath").MustString("/var/lib/mysql"),
+		SqlitePath:      defaultSection.Key("SqlitePath").MustString("/var/lib/mysql/audit.sqlite"),
+		TimeFormatAudit: defaultSection.Key("TimeFormatAudit").MustString("20060102 15:04:05"),
+		TimeFormatDB:    defaultSection.Key("TimeFormatDB").MustString("2006-01-02 15:04:05-07:00"),
 		TimeLocation:    loc,
 		MaxWorkers:      maxWorkers,
 		LogLevel:        logLevel,

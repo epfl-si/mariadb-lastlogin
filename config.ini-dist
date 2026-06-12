@@ -7,3 +7,4 @@ TimeFormatDB = "2006-01-02 15:04:05-07:00"
 TimeLocation = Europe/Zurich
 MaxWorkers = 4
 LogLevel = ERROR
+LogLevel = ERROR  # DEBUG, INFO, WARN, ERROR
