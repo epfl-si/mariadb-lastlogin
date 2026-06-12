@@ -20,7 +20,7 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           # Extract content between this version header and the next version header
-          CHANGELOG=$(awk "/^## ${VERSION} /{flag=1; next} /^## v[0-9]/{flag=0} flag" CHANGELOG.md)
+          CHANGELOG=$(awk "/^## \\[${VERSION}\\]/{flag=1; next} /^## \\[v[0-9]/{flag=0} flag" CHANGELOG.md)
           echo "content<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
