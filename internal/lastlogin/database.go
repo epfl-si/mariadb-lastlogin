@@ -137,10 +137,10 @@ func InsertOrUpdateAccounts(cfg Config, db *sql.DB, accounts map[string]AccountI
 
 		// Append location to date string (+02:00 CEST for Europe/Zurich)
 		timeWithLocation := time.Date(
-	        a.LastSeen.Year(), a.LastSeen.Month(), a.LastSeen.Day(),
-	        a.LastSeen.Hour(), a.LastSeen.Minute(), a.LastSeen.Second(),
-	        a.LastSeen.Nanosecond(), cfg.TimeLocation)
-	    formatedTime := timeWithLocation.Format(cfg.TimeFormatDB)
+			a.LastSeen.Year(), a.LastSeen.Month(), a.LastSeen.Day(),
+			a.LastSeen.Hour(), a.LastSeen.Minute(), a.LastSeen.Second(),
+			a.LastSeen.Nanosecond(), cfg.TimeLocation)
+		formatedTime := timeWithLocation.Format(cfg.TimeFormatDB)
 
 		// Try to update first
 		result, err := updateStmt.Exec(formatedTime, a.Name, a.Host)

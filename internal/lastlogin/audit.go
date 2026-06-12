@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-
 func isAuditLogName(name, base string) bool {
 	if name == base {
 		return true
