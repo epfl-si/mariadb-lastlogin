@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [unreleased] - 0000-00-00
 
+### Added
+
+- Log an INFO line at the start and completion of each processing run, so loop
+  mode shows it is alive (requires `LogLevel = INFO`).
+
 ### Changed
 
 - Make loop and oneshot modes mutually exclusive in `main` to avoid a latent

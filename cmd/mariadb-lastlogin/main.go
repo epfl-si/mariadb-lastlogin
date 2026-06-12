@@ -36,6 +36,7 @@ func main() {
 	if cfg.LoopEnabled {
 		// loop mode
 		for {
+			slog.Info("loop tick", "intervalMinutes", cfg.IntervalMinutes)
 			if err := run(cfg); err != nil {
 				slog.Error("run failed, will retry", "error_msg", err)
 			}
@@ -90,12 +91,13 @@ func run(cfg lastlogin.Config) error {
 		slog.Error("failed to insert or update accounts", "error_msg", err)
 		return err
 	}
-	slog.Debug("debug affected accounts count", "inserted", inserted, "updated", updated)
 
 	if err := lastlogin.UpdateLastProcessedTime(cfg, db, newLastProcessedTime); err != nil {
 		slog.Error("error updating the date of the last parsing.", "error_msg", err)
 		return err
 	}
+
+	slog.Info("processing run completed", "inserted", inserted, "updated", updated, "files", len(filePaths))
 
 	return nil
 }
