@@ -2,7 +2,6 @@ package lastlogin
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log/slog"
 	_ "modernc.org/sqlite"
@@ -111,41 +110,55 @@ func UpdateLastProcessedTime(cfg Config, db *sql.DB, lastProcessedTime time.Time
 }
 
 func InsertOrUpdateAccounts(cfg Config, db *sql.DB, accounts map[string]AccountInfo) (uint64, uint64, error) {
-	var insertedAccounts uint64 = 0
-	var updatedAccounts uint64 = 0
-
-	selectStmt, err := db.Prepare(`
-		SELECT last_seen
-		FROM Accounts
-		WHERE name = ?
-		AND host = ?
-	`)
+	// --- 1. Load existing accounts into memory (ONE query) ---
+	existing := make(map[string]time.Time)
+	rows, err := db.Query("SELECT name, host, last_seen FROM Accounts")
 	if err != nil {
-		return 0, 0, fmt.Errorf("error preparing select statement: %w", err)
+		return 0, 0, fmt.Errorf("error selecting accounts: %w", err)
 	}
-	defer selectStmt.Close()
+	for rows.Next() {
+		var name, host string
+		var lastSeen sql.NullString
+		if err := rows.Scan(&name, &host, &lastSeen); err != nil {
+			rows.Close()
+			return 0, 0, fmt.Errorf("error scanning account: %w", err)
+		}
+		stored, err := time.Parse(time.RFC3339, lastSeen.String)
+		if err != nil {
+			rows.Close()
+			return 0, 0, fmt.Errorf("error parsing stored time %q: %w", lastSeen.String, err)
+		}
+		existing[name+"@"+host] = stored
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return 0, 0, err
+	}
 
-	// Prepare the update statement
-	updateStmt, err := db.Prepare(`
-		UPDATE Accounts
-		SET last_seen = ?
-		WHERE name = ? AND host = ?
+	// --- 2. Batch all writes in ONE transaction ---
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, 0, fmt.Errorf("error beginning transaction: %w", err)
+	}
+	defer tx.Rollback() // safe no-op after Commit()
+
+	updateStmt, err := tx.Prepare(`
+		UPDATE Accounts SET last_seen = ? WHERE name = ? AND host = ?
 	`)
 	if err != nil {
-		return 0, 0, fmt.Errorf("error preparing update statement: %w", err)
+		return 0, 0, err
 	}
 	defer updateStmt.Close()
 
-	// Prepare the insert statement
-	insertStmt, err := db.Prepare(`
-		INSERT INTO Accounts (name, host, last_seen)
-		VALUES (?, ?, ?)
+	insertStmt, err := tx.Prepare(`
+		INSERT INTO Accounts (name, host, last_seen) VALUES (?, ?, ?)
 	`)
 	if err != nil {
-		return 0, 0, fmt.Errorf("error preparing insert statement: %w", err)
+		return 0, 0, err
 	}
 	defer insertStmt.Close()
 
+	var inserted, updated uint64
 	for _, a := range accounts {
 		newTime := time.Date(
 			a.LastSeen.Year(), a.LastSeen.Month(), a.LastSeen.Day(),
@@ -153,30 +166,25 @@ func InsertOrUpdateAccounts(cfg Config, db *sql.DB, accounts map[string]AccountI
 			a.LastSeen.Nanosecond(), cfg.TimeLocation)
 		formatted := newTime.Format(cfg.TimeFormatDB)
 
-		var existing sql.NullString
-		err := selectStmt.QueryRow(a.Name, a.Host).Scan(&existing)
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			// brand-new account -> must insert
-			if _, err := insertStmt.Exec(a.Name, a.Host, formatted); err != nil {
-				return 0, 0, fmt.Errorf("error inserting account: %w", err)
-			}
-			insertedAccounts++
-		case err != nil:
-			return 0, 0, fmt.Errorf("error selecting account: %w", err)
-		default:
-			stored, err := time.Parse(time.RFC3339, existing.String)
-			if err != nil {
-				return 0, 0, fmt.Errorf("error parsing stored time %q: %w", existing.String, err)
-			}
-			if newTime.After(stored) { // true instant comparison, DST-safe
+		key := a.Name + "@" + a.Host
+		if stored, ok := existing[key]; ok {
+			if newTime.After(stored) {
 				if _, err := updateStmt.Exec(formatted, a.Name, a.Host); err != nil {
 					return 0, 0, fmt.Errorf("error updating account: %w", err)
 				}
-				updatedAccounts++
+				updated++
 			}
+		} else {
+			if _, err := insertStmt.Exec(a.Name, a.Host, formatted); err != nil {
+				return 0, 0, fmt.Errorf("error inserting account: %w", err)
+			}
+			inserted++
 		}
 	}
 
-	return insertedAccounts, updatedAccounts, nil
+	if err := tx.Commit(); err != nil {
+		return 0, 0, fmt.Errorf("error committing transaction: %w", err)
+	}
+
+	return inserted, updated, nil
 }
