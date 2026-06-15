@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [unreleased] - 0000-00-00
+## [v1.4.1] - 2026-06-15
+
+### Changed
+
+- Optimize Sqlite queries to speed up execution and lower memory consumption (50% gain)
+- Optimize audit log parsing to use field extraction functions instead of string splitting (7% gain)
 
 ### Fixed
 
