@@ -29,6 +29,24 @@ func isAuditLogName(name, base string) bool {
 	return true
 }
 
+// field returns the nth comma-separated field from line (0-based).
+// It does not allocate a slice like strings.Split.
+func field(line string, n int) string {
+	start := 0
+	for _ = range n {
+		idx := strings.IndexByte(line[start:], ',')
+		if idx == -1 {
+			return ""
+		}
+		start += idx + 1
+	}
+	end := strings.IndexByte(line[start:], ',')
+	if end == -1 {
+		return strings.TrimSpace(line[start:])
+	}
+	return strings.TrimSpace(line[start : start+end])
+}
+
 func FilterAndSortNewFiles(cfg Config, lastProcessedTime time.Time) ([]string, time.Time, error) {
 	var fileInfos []FileInfo
 	totalFiles := 0
@@ -157,27 +175,29 @@ func ParseAuditReader(cfg Config, r io.Reader) (map[string]AccountInfo, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, ",CONNECT") {
-			parts := strings.Split(line, ",")
-			if len(parts) < 4 {
-				continue
-			}
+		if !strings.Contains(line, ",CONNECT") {
+			continue
+		}
 
-			date, err := time.Parse(cfg.TimeFormatAudit, strings.TrimSpace(parts[0]))
-			if err != nil {
-				continue
-			}
+		dateStr := field(line, 0)
+		name := field(line, 2)
+		host := field(line, 3)
 
-			name := strings.TrimSpace(parts[2])
-			host := strings.TrimSpace(parts[3])
-			key := name + "@" + host
+		if dateStr == "" || name == "" || host == "" {
+			continue
+		}
 
-			if existing, ok := accounts[key]; !ok || date.After(existing.LastSeen) {
-				accounts[key] = AccountInfo{
-					Name:     name,
-					Host:     host,
-					LastSeen: date,
-				}
+		date, err := time.Parse(cfg.TimeFormatAudit, dateStr)
+		if err != nil {
+			continue
+		}
+
+		key := name + "@" + host
+		if existing, ok := accounts[key]; !ok || date.After(existing.LastSeen) {
+			accounts[key] = AccountInfo{
+				Name:     name,
+				Host:     host,
+				LastSeen: date,
 			}
 		}
 	}
