@@ -97,11 +97,13 @@ Our testing on a 4-core computer with 10 files of 100MB each yielded the followi
 
 - Initial run (parsing all logs): ~1.4 seconds
 - Subsequent runs (parsing only the latest 100MB file): <1 second
+- Less than 200MB of memory was necessary
 
 Memory usage spikes were not significant in our tests. However, we strongly recommend thorough testing in your specific environment before deploying to production, especially if:
 
 1. The script runs on the same server as MariaDB
 2. Most of the server's memory is allocated to InnoDB cache
+3. You have more than 5,000 unique accounts
 
 In such scenarios, there's a potential risk of memory exhaustion. Adjust the cron job frequency and/or log rotation settings to balance between timely data collection and system resource consumption.
 
