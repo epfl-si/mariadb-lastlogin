@@ -3,6 +3,7 @@ package lastlogin
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -147,9 +148,12 @@ func ParseAuditFile(cfg Config, filename string) (map[string]AccountInfo, error)
 		return nil, err
 	}
 	defer file.Close()
+	return ParseAuditReader(cfg, file)
+}
 
+func ParseAuditReader(cfg Config, r io.Reader) (map[string]AccountInfo, error) {
 	accounts := make(map[string]AccountInfo)
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(r)
 
 	for scanner.Scan() {
 		line := scanner.Text()
