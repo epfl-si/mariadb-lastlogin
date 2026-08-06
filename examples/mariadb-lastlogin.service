@@ -1,0 +1,24 @@
+[Unit]
+Description=MariaDB Last Login tracker
+Documentation=https://github.com/epfl-si/mariadb-lastlogin
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/mariadb-lastlogin
+Restart=on-failure
+RestartSec=120
+
+# Run as the mysql user so the service can read the audit logs and write
+# the SQLite database under /var/lib/mysql (the default paths in config.ini).
+# Adjust User/Group if your deployment uses different paths or permissions.
+User=mysql
+Group=mysql
+
+# Ensure stdout/stderr are captured by journald. This is the default for
+# systemd services, but being explicit makes the log pipeline obvious.
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
