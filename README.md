@@ -87,7 +87,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now mariadb-lastlogin.service
 ```
 
-Logs go to the user's journald, which log shippers such as Grafana Alloy, Promtail, or Fluent Bit can forward to Loki.
+Logs go to the system's journald, which log shippers such as Grafana Alloy, Promtail, or Fluent Bit can forward to Loki.
 
 ### Cron
 
