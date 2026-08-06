@@ -79,15 +79,12 @@ The binary supports two execution modes:
 
 ### systemd service (recommended)
 
-Use `examples/mariadb-lastlogin.service` with `LoopEnabled = true` in your config. The unit runs under the `mysql` user's systemd manager:
+Use `examples/mariadb-lastlogin.service` with `LoopEnabled = true` in your config. Then prepare the system unit file:
 
 ```sh
-sudo mkdir -p /home/mysql/.config/systemd/user
-sudo cp examples/mariadb-lastlogin.service /home/mysql/.config/systemd/user/
-sudo chown -R mysql:mysql /home/mysql/.config/systemd
-sudo loginctl enable-linger mysql
-sudo -u mysql systemctl --user daemon-reload
-sudo -u mysql systemctl --user enable --now mariadb-lastlogin
+sudo cp examples/mariadb-lastlogin.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now mariadb-lastlogin.service
 ```
 
 Logs go to the user's journald, which log shippers such as Grafana Alloy, Promtail, or Fluent Bit can forward to Loki.
