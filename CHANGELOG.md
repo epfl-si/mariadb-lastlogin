@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v1.4.6] - 2026-09-18
+
+### Dependencies
+
+- Bump modernc.org/sqlite from 1.57.0 to 1.58.0 [changelog](https://gitlab.com/cznic/sqlite/blob/master/CHANGELOG.md).
+
+
 ## [v1.4.5] - 2026-08-26
 
 ### Changed
